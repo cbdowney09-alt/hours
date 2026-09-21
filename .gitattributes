@@ -1,0 +1,5 @@
+# Normalize text to LF in the repository; Git still checks out
+# whatever suits the local platform.
+* text=auto eol=lf
+
+*.png binary

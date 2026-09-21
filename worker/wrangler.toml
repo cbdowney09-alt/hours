@@ -1,0 +1,18 @@
+# Only needed if you deploy with the wrangler CLI instead of the Cloudflare dashboard.
+name = "hours"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+[ai]
+binding = "AI"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "PASTE_YOUR_KV_NAMESPACE_ID_HERE"
+
+[vars]
+ALLOWED_ORIGIN = "https://YOUR-GITHUB-NAME.github.io"
+
+# Set secrets with:
+#   npx wrangler secret put APP_PASSWORD
+#   npx wrangler secret put ANTHROPIC_API_KEY   (optional)
