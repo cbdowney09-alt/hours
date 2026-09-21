@@ -1,5 +1,6 @@
 # Publishes the contents of app/ to GitHub Pages.
-# One-time setup: repo Settings -> Pages -> Source: "GitHub Actions".
+# The configure-pages step turns Pages on by itself, so there is nothing
+# to switch on by hand in repo settings.
 name: Deploy app to Pages
 
 on:
@@ -27,8 +28,11 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/configure-pages@v5
+        with:
+          # Enable Pages on first run instead of requiring a settings change.
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: app

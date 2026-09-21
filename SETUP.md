@@ -24,11 +24,10 @@ Hours now runs on your own free setup: the app lives on GitHub Pages, and a Clou
 
 ## Part 2: GitHub Pages
 
-The repo already has a workflow that publishes `app/` for you, so this is a one-time switch:
+The repo publishes itself. A workflow turns Pages on and puts `app/` online, so there is nothing to configure:
 
-1. In the repo, go to **Settings → Pages** and set the source to **GitHub Actions**. (Not "Deploy from a branch" — the app lives in `app/`, and the workflow handles it.)
-2. Go to the **Actions** tab and let the *Deploy app to Pages* run finish. If none has run yet, open the workflow and click **Run workflow**.
-3. Your app is at `https://YOUR-GITHUB-NAME.github.io/hours/`.
+1. Open the **Actions** tab and wait for *Deploy app to Pages* to go green (under a minute). If no run has started, open that workflow and click **Run workflow**.
+2. Your app is at `https://YOUR-GITHUB-NAME.github.io/hours/`.
 
 From then on, any push that touches `app/` republishes the site on its own.
 
