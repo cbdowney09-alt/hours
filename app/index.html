@@ -648,6 +648,11 @@
     <div class="field"><label>Password</label><input type="password" id="setup-key" autocomplete="current-password"></div>
     <div id="setup-msg" style="font-size:13px;min-height:18px;color:var(--danger);"></div>
     <div class="modal-actions"><button class="btn" id="setup-go">Connect</button></div>
+    <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:14px;">
+      <label class="btn ghost" for="import-file" style="display:inline-block;">Import backup file</label>
+      <input type="file" id="import-file" accept=".json,application/json" style="display:none;">
+      <div id="import-msg" style="font-size:12.5px;color:var(--text-dim);margin-top:8px;line-height:1.5;">Adds events and notes from a .json backup. Nothing is overwritten.</div>
+    </div>
   </div>
 </div>
 
@@ -851,6 +856,42 @@
   });
   document.addEventListener("click", function(e){
     if (e.target && e.target.id === "ai-status") openSetup("");
+  });
+
+  // ---------- import a backup file ----------
+  var importFile = document.getElementById("import-file");
+  var importMsg = document.getElementById("import-msg");
+  importFile.addEventListener("change", async function(){
+    var f = (importFile.files || [])[0];
+    importFile.value = "";
+    if (!f) return;
+    if (!loaded) { importMsg.textContent = "Connect first, then import."; return; }
+    importMsg.textContent = "Reading file…";
+    try {
+      var text = await f.text();
+      var data = JSON.parse(text);
+      var evs = Array.isArray(data.events) ? data.events : [];
+      var nts = Array.isArray(data.notes) ? data.notes : [];
+      if (!evs.length && !nts.length) { importMsg.textContent = "That file has no events or notes in it."; return; }
+      await loaded;
+      evs.forEach(function(e){
+        store.collections.events.push(Object.assign({ done: false, createdAt: Date.now() }, e, { id: uid() }));
+      });
+      nts.forEach(function(n){
+        store.collections.notes.push(Object.assign({ createdAt: Date.now() }, n, { id: uid() }));
+      });
+      if (evs.length) await persist("events");
+      if (nts.length) await persist("notes");
+      notify();
+      importMsg.textContent = "Imported " + evs.length + " event" + (evs.length === 1 ? "" : "s") +
+        (nts.length ? " and " + nts.length + " note" + (nts.length === 1 ? "" : "s") : "") + ". Close this box to see them.";
+    } catch (e) {
+      importMsg.textContent = "Couldn't import that file (" + (e.code || "bad file") + ").";
+    }
+  });
+  // Let the connect box be closed once you're connected.
+  setup.addEventListener("click", function(e){
+    if (e.target === setup && loaded) setup.classList.remove("show");
   });
 
   if (cfg().url && cfg().key) connect(); else openSetup("");
